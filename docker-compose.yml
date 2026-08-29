@@ -1,0 +1,40 @@
+# Local development database for the Inventory Management Dashboard (Req 24.1).
+#
+# Usage:
+#   docker compose up -d db      # start PostgreSQL in the background
+#   docker compose ps            # check health status
+#   docker compose down          # stop (data persists in the named volume)
+#   docker compose down -v       # stop and remove data volume
+#
+# Defaults below match the local DATABASE_URL documented in api/.env.example:
+#   postgresql://postgres:postgres@localhost:5432/inventory?schema=public
+# Override any value via a shell env var or a root .env file, e.g. POSTGRES_PASSWORD=...
+
+services:
+  db:
+    image: postgres:16
+    container_name: inventory-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-inventory}
+    ports:
+      # host:container — exposes Postgres on localhost:5432
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      # Named volume for data persistence across container restarts
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      # pg_isready confirms the server is accepting connections.
+      # Polls every 5s; start_period gives initdb time before failures count.
+      # Worst case readiness detection: start_period (10s) + retries (5) * interval (5s) = 35s < 60s.
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-inventory}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  pgdata:
+    name: inventory-pgdata

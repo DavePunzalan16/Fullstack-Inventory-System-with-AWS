@@ -1,0 +1,44 @@
+{
+  "root": true,
+  "extends": ["next/core-web-vitals"],
+  "rules": {
+    "no-restricted-globals": [
+      "error",
+      {
+        "name": "fetch",
+        "message": "Do not call fetch directly. All server communication must go through the RTK Query API definition (src/state/api.ts). See Req 15.4."
+      }
+    ],
+    "no-restricted-properties": [
+      "error",
+      {
+        "object": "window",
+        "property": "fetch",
+        "message": "Do not call window.fetch directly. Use the RTK Query API definition (src/state/api.ts). See Req 15.4."
+      }
+    ],
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "axios",
+            "message": "Do not import axios. All server communication must go through the RTK Query API definition (src/state/api.ts). See Req 15.4."
+          }
+        ]
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "comment": "RTK Query endpoint definitions are the single allowed place for HTTP client usage (Req 15.4).",
+      "files": ["src/state/api.ts", "src/state/api.*.ts"],
+      "rules": {
+        "no-restricted-globals": "off",
+        "no-restricted-properties": "off",
+        "no-restricted-imports": "off"
+      }
+    }
+  ],
+  "ignorePatterns": ["node_modules/", ".next/", "out/", "coverage/", "jest.config.js", "next.config.mjs"]
+}

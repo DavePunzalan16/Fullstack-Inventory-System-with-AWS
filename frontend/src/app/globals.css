@@ -1,0 +1,25 @@
+@import 'tailwindcss';
+
+/*
+ * Design tokens (Tailwind CSS 4 @theme) from the portfolio design system.
+ * Colors, fonts, and radii are exposed as CSS variables + Tailwind utilities.
+ */
+@theme {
+  --color-primary: #c3b1ff;
+  --color-background: #1e0031;
+  --color-surface: #1a1a1a;
+  --color-icon-bg: #222222;
+  --color-white: #ffffff;
+  --color-offwhite: #c7c7c7;
+  --color-black: #0a0a0a;
+  --color-dark-gray: #484848;
+
+  --font-display: 'Bebas Neue', cursive;
+  --font-body: 'Manrope', sans-serif;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-white);
+  font-family: var(--font-body);
+}
