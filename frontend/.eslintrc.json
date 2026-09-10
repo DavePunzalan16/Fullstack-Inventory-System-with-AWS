@@ -1,4 +1,4 @@
-{
+﻿{
   "root": true,
   "extends": ["next/core-web-vitals"],
   "rules": {
@@ -31,7 +31,6 @@
   },
   "overrides": [
     {
-      "comment": "RTK Query endpoint definitions are the single allowed place for HTTP client usage (Req 15.4).",
       "files": ["src/state/api.ts", "src/state/api.*.ts"],
       "rules": {
         "no-restricted-globals": "off",
