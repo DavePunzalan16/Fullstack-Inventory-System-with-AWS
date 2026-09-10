@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Bebas_Neue, Manrope } from 'next/font/google';
 import './globals.css';
+import { Providers } from './providers';
 
 /*
  * Fonts per the design system: Bebas Neue for display headings, Manrope for
@@ -31,7 +32,9 @@ export default function RootLayout({
   // Dark theme is the default per the design system (Req 9.5).
   return (
     <html lang="en" className={`${bebasNeue.variable} ${manrope.variable}`} data-theme="dark">
-      <body>{children}</body>
+      <body>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
