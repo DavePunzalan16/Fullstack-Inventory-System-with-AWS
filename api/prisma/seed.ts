@@ -19,6 +19,7 @@
  */
 
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -56,6 +57,8 @@ interface UserSeed {
   name: string;
   email: string;
   role: Role;
+  // Optional plaintext password for LOCAL DEV email/password login. Hashed at seed time.
+  password?: string;
 }
 
 interface ExpenseSeed {
@@ -95,6 +98,10 @@ const products: ProductSeed[] = [
 ];
 
 const users: UserSeed[] = [
+  // LOCAL DEV SEED ONLY. Do NOT ship this credential to production: before
+  // deploying, change this password or have the seed read it from an env var
+  // (e.g. SEED_ADMIN_PASSWORD). See README (Batch 3) for the warning.
+  { key: 'admin0', cognitoSub: 'local:seed-admin', name: 'Admin', email: 'admin@gmail.com', role: 'admin', password: 'admin123' },
   { key: 'admin1', cognitoSub: 'seed-cognito-sub-admin-1', name: 'Alice Admin', email: 'alice.admin@example.com', role: 'admin' },
   { key: 'admin2', cognitoSub: 'seed-cognito-sub-admin-2', name: 'Aaron Admin', email: 'aaron.admin@example.com', role: 'admin' },
   { key: 'staff1', cognitoSub: 'seed-cognito-sub-staff-1', name: 'Sam Staff', email: 'sam.staff@example.com', role: 'staff' },
@@ -161,6 +168,9 @@ async function seed(): Promise<void> {
         name: u.name,
         email: u.email,
         role: u.role,
+        // LOCAL DEV ONLY: hash the seed password so email/password login works
+        // locally. Never seed real production credentials this way.
+        passwordHash: u.password ? await bcrypt.hash(u.password, 10) : null,
       },
     });
     userIdByKey.set(u.key, created.id);

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Property-based test for theme persistence (Property 20).
  *
  * For any sequence of theme selections, the last selection is the one that is

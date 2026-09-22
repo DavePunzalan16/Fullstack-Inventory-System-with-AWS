@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Local development authentication (AUTH_MODE=dev only).
  *
  * Provides a token verifier and a login helper that let you sign in locally as

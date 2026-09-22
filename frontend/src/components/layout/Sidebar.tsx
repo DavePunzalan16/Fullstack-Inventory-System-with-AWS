@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 /**
  * Sidebar (Req 10.1, 10.2, 10.4, 10.5, 6.5).

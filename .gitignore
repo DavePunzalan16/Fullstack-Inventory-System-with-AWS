@@ -45,3 +45,5 @@ pgdata/
 
 # Local dev logs from start-local.ps1
 .local-logs/
+
+frontend/build.txt

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 /**
  * SummaryCard (Req 1.1-1.5, 1.7).

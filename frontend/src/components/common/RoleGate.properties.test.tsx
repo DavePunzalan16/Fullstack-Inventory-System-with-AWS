@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Property-based test for admin-only UI gating (Property 17).
  */
 

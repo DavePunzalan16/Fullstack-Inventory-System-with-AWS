@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 /**
  * Dashboard page (Req 1.x, 2.x): hero banner, four summary cards, three charts.

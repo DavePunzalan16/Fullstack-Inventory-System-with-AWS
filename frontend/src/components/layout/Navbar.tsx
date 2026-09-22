@@ -1,20 +1,29 @@
-﻿'use client';
+'use client';
 
 /**
- * Navbar (Req 10.3, 10.7): global search + Help button + profile; drawer toggle
- * < 768px. The Help button (distinct from the profile placeholder) is global.
- * When no user is present, the profile shows initials/placeholder while keeping
- * search and help accessible.
+ * Navbar (Req 10.3, 10.7): global search + Help button + auth controls.
+ * When logged in, shows the user email + Logout; otherwise a Login link.
+ * The Help button (distinct from auth controls) is global.
  */
+
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { HelpButton } from '@/components/layout/HelpButton';
 import { GlobalSearchBar } from '@/components/search/GlobalSearchBar';
+import { signOut } from '@/state/authSlice';
 import { useAppDispatch, useAppSelector } from '@/state/hooks';
 import { toggleSidebar } from '@/state/layoutSlice';
 
 export function Navbar() {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const user = useAppSelector((s) => s.auth.user);
+
+  const handleLogout = () => {
+    dispatch(signOut());
+    router.replace('/sign-in');
+  };
 
   return (
     <header className="flex items-center gap-4 border-b border-dark-gray bg-background px-4 py-3">
@@ -33,19 +42,26 @@ export function Navbar() {
 
       <div className="flex items-center gap-3">
         <HelpButton />
-        <div className="flex items-center gap-2" data-testid="navbar-profile">
-          {user ? (
-            <span className="text-white">{user.name}</span>
-          ) : (
-            <span
-              aria-label="Profile unavailable"
-              data-testid="profile-placeholder"
-              className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-icon-bg text-secondary"
+        {user ? (
+          <div className="flex items-center gap-2" data-testid="navbar-profile">
+            <span className="hidden text-sm text-white sm:inline">{user.email}</span>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="rounded-full bg-icon-bg px-4 py-1.5 text-sm font-semibold text-secondary hover:text-white"
             >
-              ?
-            </span>
-          )}
-        </div>
+              Logout
+            </button>
+          </div>
+        ) : (
+          <Link
+            href="/sign-in"
+            data-testid="navbar-login"
+            className="rounded-full bg-primary px-4 py-1.5 text-sm font-bold uppercase text-black"
+          >
+            Login
+          </Link>
+        )}
       </div>
     </header>
   );

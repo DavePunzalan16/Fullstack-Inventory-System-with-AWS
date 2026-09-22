@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 /**
  * Dashboard charts (Req 2.1-2.6) built with Recharts. Each chart owns its

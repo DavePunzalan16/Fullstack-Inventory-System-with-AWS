@@ -1,5 +1,5 @@
-﻿/**
- * RTK Query API definition (Req 15.1â€“15.4, 15.6, 11.6, 24.4, Property 21).
+/**
+ * RTK Query API definition (Req 15.1ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“15.4, 15.6, 11.6, 24.4, Property 21).
  *
  * This is the SINGLE place in the frontend permitted to perform HTTP calls
  * (the ESLint config forbids fetch/axios elsewhere). All endpoints are defined
@@ -124,6 +124,18 @@ export const api = createApi({
     devLogin: builder.mutation<{ token: string; user: SessionUser }, { email?: string; role?: 'admin' | 'staff' }>({
       query: (body) => ({ url: '/auth/dev-login', method: 'POST', body }),
     }),
+
+    // ---- Email/password auth (Batch 3) ----
+    login: builder.mutation<{ token: string; user: SessionUser }, { email: string; password: string }>({
+      query: (body) => ({ url: '/auth/login', method: 'POST', body }),
+    }),
+    signup: builder.mutation<{ token: string; user: SessionUser }, { email: string; password: string; name?: string }>({
+      query: (body) => ({ url: '/auth/signup', method: 'POST', body }),
+    }),
+    updateProfile: builder.mutation<SessionUser, { email?: string; newPassword?: string; currentPassword?: string }>({
+      query: (body) => ({ url: '/users/me', method: 'PATCH', body }),
+      invalidatesTags: ['User'],
+    }),
   }),
 });
 
@@ -146,4 +158,7 @@ export const {
   useGetUsersQuery,
   useGetMeQuery,
   useDevLoginMutation,
+  useLoginMutation,
+  useSignupMutation,
+  useUpdateProfileMutation,
 } = api;

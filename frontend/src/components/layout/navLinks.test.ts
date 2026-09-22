@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Unit tests for sidebar nav links (Req 10.1, 6.5).
  */
 

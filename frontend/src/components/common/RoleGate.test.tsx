@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Component test: RoleGate renders children only for admins (Req 12.7, 12.8).
  */
 

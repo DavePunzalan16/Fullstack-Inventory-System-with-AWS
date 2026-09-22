@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Test helper: renders a component tree wrapped in a fresh Redux store,
  * optionally seeding the auth user so role-gated UI can be exercised.
  */

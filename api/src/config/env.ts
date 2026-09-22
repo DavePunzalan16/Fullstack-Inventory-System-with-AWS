@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Environment configuration loader and validator (fail-fast).
  *
  * Loads variables from a `.env` file via dotenv, then validates that every

@@ -1,4 +1,4 @@
-﻿# Implementation Plan: Inventory Management Dashboard
+# Implementation Plan: Inventory Management Dashboard
 
 ## Overview
 
@@ -430,6 +430,42 @@ Tasks marked with `*` are optional (tests) and may be skipped for a faster MVP, 
   - Confirm local startup shows a populated dashboard, product list, and expense chart with no default red error text; adding a product and an expense works; the light/dark toggle is readable on every page; and the help button opens the drawer.
   - Confirm `npm run build` in `frontend` completes with no type errors and existing test suites still pass.
   - _Requirements: 20.1, 20.5, 24.6_
+
+## Stability & Authentication (Batch 3)
+
+Context for this batch (do not contradict):
+- The frontend dev server silently fell back from port 3000 to 3001 when 3000 was busy, causing stale/unstyled pages because CSS/JS chunks 404'd across ports.
+- `/sign-in` throws a 500 because the page imports `amazon-cognito-identity-js` and reads placeholder Cognito env vars in dev; there is no real email/password auth yet, only dev-login buttons.
+- Decision: extend the EXISTING API/JWT auth (no NextAuth). Add email/password login + signup as API endpoints that issue the same JWT-style token the app already attaches via RTK Query. Add a `passwordHash` column to the User Prisma model. Keep Cognito as the production option; local uses `AUTH_MODE=dev`.
+
+- [x] 26. Dev server port stability
+  - Pin the frontend dev script to a fixed port that fails loudly if taken: `next dev -p 3000` (no silent auto-increment).
+  - Update `start-local.ps1` (or a predev step) to detect and stop a stale node process bound to port 3000 before starting.
+  - Confirm `next.config.mjs` does not hardcode `localhost:3000` (assetPrefix, origins, redirects); if it does, read from an env var.
+  - Document in README: if the layout looks unstyled after starting dev, hard-refresh (Ctrl+Shift+R); it usually means a previous dev server is still running on another port.
+  - _Requirements: 24.2, 24.6, 15.2_
+
+- [x] 27. Fix /sign-in Internal Server Error
+  - Diagnose via server logs; the 500 is hidden behind the generic error page.
+  - Make the sign-in page render safely in dev (do not construct the Cognito user pool at module/render time when Cognito env vars are placeholders / `AUTH_MODE=dev`); guard so `/sign-in` always renders a real form, never a 500.
+  - _Requirements: 11.5, 11.6, 24.2_
+
+- [x] 28. Email/password authentication (extend existing API/JWT auth)
+  - Add a `passwordHash` column to the User model (Prisma migration); hash with bcrypt/argon2.
+  - API: `POST /auth/login` (email+password -> app token + user), `POST /auth/signup` (email+password -> creates User role='user', returns token), `PATCH /users/me` (edit own email/password; changing requires current password). Reads may stay open; protect write actions (create product/expense, profile edit) behind an authenticated session. Flag locking down reads as a follow-up, do not over-build.
+  - Seed one admin: email `admin@gmail.com`, password `admin123`, role admin. Comment in `seed.ts` AND note in README that this is a LOCAL DEV SEED ONLY and the password must be changed or read from env vars before production.
+  - _Requirements: 11.1, 11.2, 11.5, 11.6, 11.7, 12.1, 12.3, 13.7, 16.1, 16.2_
+
+- [x] 29. Frontend auth UX + role-gated Settings
+  - Header: a Login button where the help/theme controls are; when logged in, show the user email + a Logout button.
+  - Sign-up form (email + password) calling `POST /auth/signup` (role 'user'); sign-in form calling `POST /auth/login`.
+  - Settings page, role-gated: admin sees Edit profile (email, password, current-password required) via `PATCH /users/me` PLUS the Theme toggle; basic user sees Theme only; logged-out users see a prompt to log in instead of an error.
+  - Gate write actions (Add Product, Add Expense, Edit profile) behind an authenticated session.
+  - _Requirements: 6.5, 9.1, 11.5, 11.6, 11.7, 12.7, 12.8_
+
+- [x] 30. Verification of Batch 3
+  - Fresh start runs on port 3000 every time (or errors clearly). `/sign-in` loads a real form (no 500). Log in as `admin@gmail.com`/`admin123`, edit email/password in Settings, log out, log back in with new credentials to confirm persistence. Sign up a basic user -> new row in User table -> that user sees Theme-only Settings. `npm run build` and `npm test` still pass.
+  - _Requirements: 11.5, 11.6, 11.7, 12.7, 20.1, 20.5, 24.6_
 
 ## Notes
 

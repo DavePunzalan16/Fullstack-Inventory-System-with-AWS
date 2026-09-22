@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 /**
  * Expenses page (Req 7.1-7.6): filters, category chart, list with delete, and

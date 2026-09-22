@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 /**
  * Minimal accessible toast. Auto-dismisses after a few seconds. Rendered near

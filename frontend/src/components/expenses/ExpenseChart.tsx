@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 /**
  * ExpenseChart (Req 7.6): total expense amount grouped by category.

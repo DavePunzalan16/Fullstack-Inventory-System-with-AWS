@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Dev-login route (AUTH_MODE=dev only). Mounted before authentication so it is
  * publicly reachable for local sign-in without Cognito.
  *

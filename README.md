@@ -1,4 +1,4 @@
-﻿# Inventory Management Dashboard
+# Inventory Management Dashboard
 
 A full-stack inventory, expense, and analytics dashboard. Staff and admins track
 products and stock movements, record expenses, and view real-time analytics, with
@@ -141,3 +141,30 @@ Add at least three screenshots / GIFs here:
 ## License
 
 Portfolio / demonstration project.
+
+
+## Local Authentication (dev)
+
+Local development uses email/password auth backed by the API (no AWS Cognito needed).
+A seeded admin account is created by `prisma/seed.ts`:
+
+- Email: `admin@gmail.com`
+- Password: `admin123`
+
+> WARNING - LOCAL DEV ONLY. This admin password is hardcoded in the seed for
+> convenience. Before deploying to production, change it or have the seed read
+> credentials from an environment variable (e.g. `SEED_ADMIN_PASSWORD`), and use
+> AWS Cognito for real authentication.
+
+Sign up new basic users at `/sign-up` (role = user). In Settings, admins can edit
+their email/password (current password required to change it); basic users see the
+theme toggle only.
+
+### Dev server troubleshooting
+
+- The dev server is pinned to port 3000 (`next dev -p 3000`) and will error if the
+  port is busy instead of silently moving to 3001. Close the other process (or run
+  `start-local.ps1`, which frees port 3000 first).
+- If the page renders unstyled/broken after starting the dev server, hard-refresh
+  (Ctrl+Shift+R). This usually means a previous dev server was still running on a
+  different port and the browser cached mismatched assets.

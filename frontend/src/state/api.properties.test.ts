@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Property-based test for authenticated request header injection (Property 21).
  *
  * Mirrors the prepareHeaders logic in the API slice: for any stored token, an

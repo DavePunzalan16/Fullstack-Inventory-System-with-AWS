@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 /**
  * Accessible modal dialog. Closes on Escape and backdrop click; traps focus to

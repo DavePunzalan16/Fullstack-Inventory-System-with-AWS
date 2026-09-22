@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 /**
  * DevLoginPanel: local-only quick sign-in (shown when NEXT_PUBLIC_AUTH_MODE=dev).

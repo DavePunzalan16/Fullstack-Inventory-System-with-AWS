@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Unit tests for client-side validation (Req 4.1, 11.2, 11.3).
  */
 

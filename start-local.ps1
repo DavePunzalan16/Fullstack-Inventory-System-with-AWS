@@ -56,11 +56,22 @@ if (Test-Port 4000) {
 }
 
 Write-Host '== 3/3  Frontend (port 3000) ==' -ForegroundColor Cyan
-if ((Test-Port 3000) -or (Test-Port 3001)) {
-  Write-Host 'Frontend already running on 3000/3001.' -ForegroundColor Green
+# Free port 3000 by stopping any stale process bound to it, so the dev server
+# always comes up on 3000 (the dev script is pinned to -p 3000 and will error
+# rather than silently fall back to 3001).
+$staleFe = Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue
+if ($staleFe) {
+  Write-Host 'Port 3000 is busy; stopping the stale process...' -ForegroundColor Yellow
+  $staleFe | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object {
+    Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue
+  }
+  Start-Sleep -Seconds 2
+}
+if (Test-Port 3000) {
+  Write-Host 'Frontend already running on 3000.' -ForegroundColor Green
 } else {
   Start-Process -FilePath 'node' `
-    -ArgumentList 'node_modules\next\dist\bin\next','dev' `
+    -ArgumentList 'node_modules\next\dist\bin\next','dev','-p','3000' `
     -WorkingDirectory (Join-Path $root 'frontend') `
     -RedirectStandardOutput (Join-Path $logs 'fe-out.log') `
     -RedirectStandardError  (Join-Path $logs 'fe-err.log') `
@@ -72,5 +83,5 @@ if ((Test-Port 3000) -or (Test-Port 3001)) {
 Write-Host ''
 Write-Host 'All services launched.' -ForegroundColor Green
 Write-Host '  API:      http://localhost:4000/health'
-Write-Host '  Frontend: http://localhost:3000  (check .local-logs\fe-out.log for the actual port)'
+Write-Host '  Frontend: http://localhost:3000'
 Write-Host '  Sign in:  open /sign-in and use the dev login buttons.'

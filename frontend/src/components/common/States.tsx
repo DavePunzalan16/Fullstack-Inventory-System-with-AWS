@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 /**
  * Shared loading / error / empty state presentational components

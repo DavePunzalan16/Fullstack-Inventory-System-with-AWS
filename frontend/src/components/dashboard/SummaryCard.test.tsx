@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Component test: SummaryCard states (Req 1.1, 1.7).
  */
 

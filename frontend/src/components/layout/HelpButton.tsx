@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 /**
  * HelpButton + HelpDrawer (Req 10.3, 10.7).

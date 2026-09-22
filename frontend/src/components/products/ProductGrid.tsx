@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 /**
  * ProductGrid (Req 3.1â€“3.6): MUI DataGrid with server-side pagination, sorting,

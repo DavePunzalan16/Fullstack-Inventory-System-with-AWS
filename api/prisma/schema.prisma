@@ -49,8 +49,11 @@ model User {
   id             String          @id @default(uuid())
   cognitoSub     String          @unique
   name           String
-  email          String
+  email          String          @unique
   role           Role
+  // Nullable: Cognito users authenticate via JWT and have no local password.
+  // Local email/password users (Batch 3) store a bcrypt hash here.
+  passwordHash   String?
   stockMovements StockMovement[]
 }
 

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 /**
  * Products page (Req 3.x, 4.x): grid for all users; Add Product form (modal)

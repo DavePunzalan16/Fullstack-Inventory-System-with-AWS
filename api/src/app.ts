@@ -1,11 +1,11 @@
-﻿/**
+/**
  * Express application assembly.
  *
  * {@link createApp} builds the Express app with the full middleware chain in
  * the order required by the design:
- *   security (helmet + nosniff + CORS + body limit) â†’ request logging â†’
- *   rate limiting â†’ routing (public /health, then authenticated feature
- *   routes) â†’ centralized error handler.
+ *   security (helmet + nosniff + CORS + body limit) Ã¢â€ â€™ request logging Ã¢â€ â€™
+ *   rate limiting Ã¢â€ â€™ routing (public /health, then authenticated feature
+ *   routes) Ã¢â€ â€™ centralized error handler.
  *
  * Authentication and per-route authorization are applied inside the feature
  * routers (they receive the shared auth middleware). Keeping assembly here
@@ -25,6 +25,7 @@ import { buildRateLimiter } from './middleware/rateLimit';
 import { createRequestLogger } from './middleware/requestLogger';
 import { securityMiddleware } from './middleware/security';
 import { registerRoutes } from './routes';
+import { authRouter } from './routes/auth.routes';
 import { devAuthRouter } from './routes/devAuth.routes';
 import type { Role } from './types';
 
@@ -82,7 +83,9 @@ export function createApp(config: AppConfig, deps: CreateAppDeps = {}): Express 
   const lookupRole = deps.lookupRole ?? prismaRoleLookup();
   const authenticate = createAuthMiddleware({ verifyToken, lookupRole });
 
-  // 4. Routes: public /health first, then authenticated feature routes.
+  // 4. Routes: public /health + public email/password auth, then authenticated routes.
+  // Email/password login/signup are public (mounted before authentication).
+  app.use(authRouter());
   if (config.authMode === 'dev') {
     // Local-only public sign-in endpoint (no Cognito). Never mounted in production.
     app.use(devAuthRouter());
