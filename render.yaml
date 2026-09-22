@@ -1,0 +1,39 @@
+# Render Blueprint for the Inventory Management Dashboard API.
+# Drop this file in the repo root, then connect the repo on render.com.
+# Render will auto-detect this file and create the service.
+
+services:
+  - type: web
+    name: inventory-api
+    runtime: node
+    region: oregon   # pick closest to your users
+    plan: free       # free tier (auto-sleeps after 15 min idle on free plan)
+    rootDir: api
+    buildCommand: npm ci && npx prisma generate && npm run build
+    startCommand: node dist/index.js
+    autoDeploy: true  # re-deploys on every push to the connected branch
+    envVars:
+      # Set these in the Render dashboard under Environment -> Environment Variables.
+      # Do NOT put real values here; this file is committed.
+      - key: DATABASE_URL
+        sync: false          # "sync: false" = Render will prompt you to fill this in
+      - key: PORT
+        value: "10000"       # Render assigns 10000 internally; keep this as-is
+      - key: ALLOWED_ORIGINS
+        sync: false          # your Vercel frontend URL, e.g. https://your-app.vercel.app
+      - key: AWS_REGION
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: S3_BUCKET
+        sync: false
+      - key: COGNITO_USER_POOL_ID
+        sync: false
+      - key: COGNITO_CLIENT_ID
+        sync: false
+      - key: AUTH_MODE
+        value: "cognito"     # use "dev" only locally, never in production
+      - key: NODE_ENV
+        value: "production"
