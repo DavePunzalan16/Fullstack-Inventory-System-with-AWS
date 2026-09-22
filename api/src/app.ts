@@ -1,11 +1,11 @@
-/**
+﻿/**
  * Express application assembly.
  *
  * {@link createApp} builds the Express app with the full middleware chain in
  * the order required by the design:
- *   security (helmet + nosniff + CORS + body limit) → request logging →
- *   rate limiting → routing (public /health, then authenticated feature
- *   routes) → centralized error handler.
+ *   security (helmet + nosniff + CORS + body limit) â†’ request logging â†’
+ *   rate limiting â†’ routing (public /health, then authenticated feature
+ *   routes) â†’ centralized error handler.
  *
  * Authentication and per-route authorization are applied inside the feature
  * routers (they receive the shared auth middleware). Keeping assembly here
@@ -17,6 +17,7 @@ import express, { type Express, type RequestHandler } from 'express';
 
 import type { AppConfig } from './config/env';
 import { cognitoConfigFromEnv, createCognitoVerifier } from './lib/cognito';
+import { createDevVerifier } from './lib/devAuth';
 import { prisma } from './lib/prisma';
 import { createAuthMiddleware, type RoleLookup, type TokenVerifier } from './middleware/auth';
 import { errorHandler } from './middleware/error';
@@ -24,6 +25,7 @@ import { buildRateLimiter } from './middleware/rateLimit';
 import { createRequestLogger } from './middleware/requestLogger';
 import { securityMiddleware } from './middleware/security';
 import { registerRoutes } from './routes';
+import { devAuthRouter } from './routes/devAuth.routes';
 import type { Role } from './types';
 
 import './types'; // load Express type augmentation
@@ -73,11 +75,18 @@ export function createApp(config: AppConfig, deps: CreateAppDeps = {}): Express 
 
   // Shared authentication middleware for protected routers.
   const verifyToken =
-    deps.verifyToken ?? createCognitoVerifier(cognitoConfigFromEnv());
+    deps.verifyToken ??
+    (config.authMode === 'dev'
+      ? createDevVerifier()
+      : createCognitoVerifier(cognitoConfigFromEnv()));
   const lookupRole = deps.lookupRole ?? prismaRoleLookup();
   const authenticate = createAuthMiddleware({ verifyToken, lookupRole });
 
   // 4. Routes: public /health first, then authenticated feature routes.
+  if (config.authMode === 'dev') {
+    // Local-only public sign-in endpoint (no Cognito). Never mounted in production.
+    app.use(devAuthRouter());
+  }
   registerRoutes(app, { authenticate });
 
   // 5. Centralized error handler (last).

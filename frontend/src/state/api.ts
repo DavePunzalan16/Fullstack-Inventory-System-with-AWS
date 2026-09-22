@@ -1,5 +1,5 @@
-/**
- * RTK Query API definition (Req 15.1–15.4, 15.6, 11.6, 24.4, Property 21).
+﻿/**
+ * RTK Query API definition (Req 15.1â€“15.4, 15.6, 11.6, 24.4, Property 21).
  *
  * This is the SINGLE place in the frontend permitted to perform HTTP calls
  * (the ESLint config forbids fetch/axios elsewhere). All endpoints are defined
@@ -119,6 +119,11 @@ export const api = createApi({
       query: () => '/users/me',
       providesTags: ['User'],
     }),
+
+    // ---- Dev-only local login (AUTH_MODE=dev) ----
+    devLogin: builder.mutation<{ token: string; user: SessionUser }, { email?: string; role?: 'admin' | 'staff' }>({
+      query: (body) => ({ url: '/auth/dev-login', method: 'POST', body }),
+    }),
   }),
 });
 
@@ -140,4 +145,5 @@ export const {
   useDeleteExpenseMutation,
   useGetUsersQuery,
   useGetMeQuery,
+  useDevLoginMutation,
 } = api;

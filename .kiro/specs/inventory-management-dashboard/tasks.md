@@ -1,8 +1,8 @@
-# Implementation Plan: Inventory Management Dashboard
+﻿# Implementation Plan: Inventory Management Dashboard
 
 ## Overview
 
-This plan builds the full-stack Inventory Management Dashboard incrementally. It is organized so the entire application is **fully runnable and testable locally** (Docker Compose Postgres, local Express API, local Next.js frontend) before any AWS work begins. AWS provisioning is documented and performed **after** local development completes, following the exact DEPLOYMENT.md order (billing alarms → IAM → VPC → RDS → EC2 → API Gateway → S3 → Amplify → free-tier checklist + teardown).
+This plan builds the full-stack Inventory Management Dashboard incrementally. It is organized so the entire application is **fully runnable and testable locally** (Docker Compose Postgres, local Express API, local Next.js frontend) before any AWS work begins. AWS provisioning is documented and performed **after** local development completes, following the exact DEPLOYMENT.md order (billing alarms â†’ IAM â†’ VPC â†’ RDS â†’ EC2 â†’ API Gateway â†’ S3 â†’ Amplify â†’ free-tier checklist + teardown).
 
 Every feature carries its own tests co-located with implementation: backend unit/integration tests (Jest + Supertest), frontend component/RTK Query tests (Jest + React Testing Library), and property-based tests (fast-check, 100+ iterations, one test per property, tagged `// Feature: inventory-management-dashboard, Property {n}: {text}`). The 33 correctness properties from the design are each their own optional sub-task placed next to the code they validate.
 
@@ -31,7 +31,7 @@ Tasks marked with `*` are optional (tests) and may be skipped for a faster MVP, 
     - _Requirements: 13.1, 13.2, 13.3, 13.4, 13.5, 13.6, 26.3_
 
   - [x] 2.3 Implement the idempotent seed script (`prisma/seed.ts`)
-    - Produce ≥10 products across ≥3 categories, ≥3 users (≥1 admin, ≥1 staff), ≥10 expenses, ≥5 stock movements
+    - Produce â‰¥10 products across â‰¥3 categories, â‰¥3 users (â‰¥1 admin, â‰¥1 staff), â‰¥10 expenses, â‰¥5 stock movements
     - Use clear-and-reseed or upsert so re-running produces no duplicate-key errors and unchanged counts
     - Exit non-zero with a clear message on DB connection error
     - _Requirements: 13.7, 13.8, 13.9_
@@ -56,7 +56,7 @@ Tasks marked with `*` are optional (tests) and may be skipped for a faster MVP, 
     - **Validates: Requirements 14.4**
 
   - [ ] 3.3 Implement security, CORS, body-size, and rate-limiting middleware
-    - Add `middleware/security.ts` (helmet with `X-Content-Type-Options: nosniff`, CORS restricted to configured deployed origin + localhost, 1 MB body limit → 413)
+    - Add `middleware/security.ts` (helmet with `X-Content-Type-Options: nosniff`, CORS restricted to configured deployed origin + localhost, 1 MB body limit â†’ 413)
     - Add `middleware/rateLimit.ts` (express-rate-limit, per-IP, configurable window/max via env, excludes `/health`, 429 with retry indication)
     - _Requirements: 14.5, 14.6, 16.4, 17.1, 17.2, 17.3, 17.4, 23.5, 23.6_
 
@@ -86,7 +86,7 @@ Tasks marked with `*` are optional (tests) and may be skipped for a faster MVP, 
     - **Validates: Requirements 12.1**
 
   - [ ] 3.10 Implement RBAC authorization guard and Zod validation middleware
-    - Add `middleware/authorize.ts` (`requireRole(...)`): Admin allowed on read+write, Staff read-only (403 on write), missing/empty/unrecognized role → 403, no state change
+    - Add `middleware/authorize.ts` (`requireRole(...)`): Admin allowed on read+write, Staff read-only (403 on write), missing/empty/unrecognized role â†’ 403, no state change
     - Add `middleware/validate.ts` wrapping Zod schemas for body/query/params: 400 with per-field errors before any handler runs; reject strings > 10,000 chars; neutralize control characters/markup
     - _Requirements: 4.4, 12.3, 12.4, 12.5, 12.6, 16.1, 16.2, 16.3_
 
@@ -167,7 +167,7 @@ Tasks marked with `*` are optional (tests) and may be skipped for a faster MVP, 
     - **Validates: Requirements 8.2, 8.5**
 
   - [ ] 5.11 Implement S3 image upload for product create/update and standalone endpoint
-    - Add `lib/s3.ts` (AWS SDK v3 put helper) and multer memory storage; validate size (>0, ≤5 MB) and format (JPEG/PNG/WebP) via magic bytes → 400 with reason; store URL on product
+    - Add `lib/s3.ts` (AWS SDK v3 put helper) and multer memory storage; validate size (>0, â‰¤5 MB) and format (JPEG/PNG/WebP) via magic bytes â†’ 400 with reason; store URL on product
     - `POST /products/:id/image`; on S3 failure return 500 and leave `imageUrl` unchanged
     - _Requirements: 5.1, 5.2, 5.3, 5.4_
 
@@ -176,7 +176,7 @@ Tasks marked with `*` are optional (tests) and may be skipped for a faster MVP, 
     - **Validates: Requirements 5.2, 5.3**
 
   - [ ] 5.13 Write integration tests for product CRUD, auth, authorization, validation, and S3 failure (Supertest)
-    - Cover create/read/update/delete; valid/expired/malformed/no token → success/401; Admin→success, Staff→403 on writes; invalid-field → 400; S3 failure → 500 with unchanged imageUrl (mocked S3)
+    - Cover create/read/update/delete; valid/expired/malformed/no token â†’ success/401; Adminâ†’success, Staffâ†’403 on writes; invalid-field â†’ 400; S3 failure â†’ 500 with unchanged imageUrl (mocked S3)
     - _Requirements: 18.2, 18.3, 18.4, 18.5, 18.6, 5.4_
 
 - [ ] 6. Backend feature: Stock movements
@@ -199,7 +199,7 @@ Tasks marked with `*` are optional (tests) and may be skipped for a faster MVP, 
 
 - [ ] 7. Backend feature: Expenses
   - [ ] 7.1 Implement expense schemas, service, controller, and routes
-    - `GET /expenses` with optional category/startDate/endDate filters (inclusive range); `GET /expenses/by-category` totals; `POST /expenses` (category from set, amount 0.01-999,999,999.99, date ≤ today, notes 0-500) → 400 identifying invalid field; `DELETE /expenses/:id`
+    - `GET /expenses` with optional category/startDate/endDate filters (inclusive range); `GET /expenses/by-category` totals; `POST /expenses` (category from set, amount 0.01-999,999,999.99, date â‰¤ today, notes 0-500) â†’ 400 identifying invalid field; `DELETE /expenses/:id`
     - Writes require Admin (403 for Staff)
     - _Requirements: 7.3, 7.5, 7.6, 7.7, 7.8, 7.9_
 
@@ -208,7 +208,7 @@ Tasks marked with `*` are optional (tests) and may be skipped for a faster MVP, 
     - **Validates: Requirements 2.2, 7.6**
 
   - [ ] 7.3 Write integration tests for expense CRUD, filters, authorization, and validation
-    - Cover create/read/delete, category and date-range filters, Admin→success/Staff→403, invalid-field → 400
+    - Cover create/read/delete, category and date-range filters, Adminâ†’success/Staffâ†’403, invalid-field â†’ 400
     - _Requirements: 18.3, 18.5, 18.6, 7.3, 7.5, 7.9_
 
 - [ ] 8. Backend feature: Users
@@ -286,7 +286,7 @@ Tasks marked with `*` are optional (tests) and may be skipped for a faster MVP, 
     - **Validates: Requirements 4.5, 6.5, 12.7, 12.8**
 
   - [ ] 12.3 Write component tests for sidebar navigation and role-based UI rendering
-    - Assert five ordered links, active state, Users hidden for Staff; Admin→create/edit/delete present, Staff→absent
+    - Assert five ordered links, active state, Users hidden for Staff; Adminâ†’create/edit/delete present, Staffâ†’absent
     - _Requirements: 19.1, 19.3_
 
   - [ ] 12.4 Implement sign-in and sign-up pages
@@ -294,7 +294,7 @@ Tasks marked with `*` are optional (tests) and may be skipped for a faster MVP, 
     - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.5, 11.7_
 
   - [ ] 12.5 Write component tests for global search bar
-    - Debounced, min 2 chars, ≤10 results, no-results indication, error indication preserving query
+    - Debounced, min 2 chars, â‰¤10 results, no-results indication, error indication preserving query
     - _Requirements: 19.1, 8.2, 8.3, 8.4, 8.6_
 
 - [ ] 13. Frontend: dashboard, products, expenses, users, search, settings
@@ -320,7 +320,7 @@ Tasks marked with `*` are optional (tests) and may be skipped for a faster MVP, 
     - _Requirements: 6.1, 6.2, 6.3, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6_
 
   - [ ] 13.6 Implement global search and settings/theme pages
-    - `GlobalSearchBar` + `SearchResultsDropdown` (debounced, min 2 chars, ≤10 results within 1s, hide <2 chars, no-results and error indications preserving query); Settings page with dark/light toggle applying within 500ms without reload
+    - `GlobalSearchBar` + `SearchResultsDropdown` (debounced, min 2 chars, â‰¤10 results within 1s, hide <2 chars, no-results and error indications preserving query); Settings page with dark/light toggle applying within 500ms without reload
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.6, 9.1, 9.2_
 
 - [ ] 14. Checkpoint - Ensure all frontend and backend tests pass locally
@@ -345,11 +345,11 @@ Tasks marked with `*` are optional (tests) and may be skipped for a faster MVP, 
     - _Requirements: 25.3, 25.4_
 
   - [ ] 16.4 Document RDS PostgreSQL provisioning (Step 4)
-    - Console navigation to create db.t3/t4g.micro, single-AZ, ≤20 GB gp2/gp3; free-tier limit stated; flag any config that would breach free tier
+    - Console navigation to create db.t3/t4g.micro, single-AZ, â‰¤20 GB gp2/gp3; free-tier limit stated; flag any config that would breach free tier
     - _Requirements: 21.1, 21.8, 25.3, 25.4_
 
   - [ ] 16.5 Document EC2 + pm2 API deployment (Step 5)
-    - Console navigation to launch t2/t3.micro (≤750 hrs/month), install runtime, configure env vars, run pm2, and ship logs to CloudWatch within 60s; free-tier limit stated
+    - Console navigation to launch t2/t3.micro (â‰¤750 hrs/month), install runtime, configure env vars, run pm2, and ship logs to CloudWatch within 60s; free-tier limit stated
     - _Requirements: 21.2, 22.1, 25.3, 25.4_
 
   - [ ] 16.6 Document API Gateway (HTTP API) setup (Step 6)
@@ -361,7 +361,7 @@ Tasks marked with `*` are optional (tests) and may be skipped for a faster MVP, 
     - _Requirements: 21.3, 25.3, 25.4_
 
   - [ ] 16.8 Document Amplify frontend hosting (Step 8)
-    - Console navigation to connect the repo, set `NEXT_PUBLIC_API_BASE_URL` at build time, enable HTTPS with HTTP→HTTPS redirect; free-tier build-minutes/served-GB limits stated
+    - Console navigation to connect the repo, set `NEXT_PUBLIC_API_BASE_URL` at build time, enable HTTPS with HTTPâ†’HTTPS redirect; free-tier build-minutes/served-GB limits stated
     - _Requirements: 20.2, 21.4, 23.1, 15.2, 25.3, 25.4_
 
   - [ ] 16.9 Document Cognito, deploy CI/CD, free-tier checklist, and teardown
@@ -370,25 +370,72 @@ Tasks marked with `*` are optional (tests) and may be skipped for a faster MVP, 
 
 - [ ] 17. Documentation deliverables
   - [ ] 17.1 Author README.md
-    - Project summary, Mermaid architecture diagram, tech stack badges, local setup instructions (prereqs, start local Postgres, required env vars DATABASE_URL and NEXT_PUBLIC_API_BASE_URL with localhost examples, commands to start API and frontend), and ≥3 visual demos
+    - Project summary, Mermaid architecture diagram, tech stack badges, local setup instructions (prereqs, start local Postgres, required env vars DATABASE_URL and NEXT_PUBLIC_API_BASE_URL with localhost examples, commands to start API and frontend), and â‰¥3 visual demos
     - _Requirements: 24.6, 25.1, 25.7_
 
   - [ ] 17.2 Author ARCHITECTURE.md
-    - For each AWS service: reason chosen, ≥1 alternative considered, ≥1 tradeoff
+    - For each AWS service: reason chosen, â‰¥1 alternative considered, â‰¥1 tradeoff
     - _Requirements: 25.2, 25.7_
 
   - [ ] 17.3 Add Lessons Learned and resume bullet drafts to documentation
-    - "Lessons Learned / Trade-offs" section with ≥3 distinct entries; 2-3 resume bullet drafts each referencing a specific verifiable outcome
+    - "Lessons Learned / Trade-offs" section with â‰¥3 distinct entries; 2-3 resume bullet drafts each referencing a specific verifiable outcome
     - _Requirements: 25.5, 25.6, 25.7_
 
 - [ ] 18. Final checkpoint - Ensure all tests pass and documentation is complete
   - Ensure all tests pass, CI is green, and all required documentation sections are present and free of placeholders, ask the user if questions arise.
 
+## Enhancements & Fixes (Batch 2)
+
+- [x] 19. Reliable local full-stack startup and clearer data-error UX
+  - The API is a local Express app run via npm (not a Docker service); `docker-compose.yml` intentionally exposes only the `db` service. The "Failed to load" states occur when the API and DB are not running together, not because an api service is missing.
+  - Add a documented one- or two-command local startup: start Postgres (`docker compose up -d db` or the local portable Postgres), run the API, run the frontend. Provide a `start-local.ps1` script that launches DB + API + frontend.
+  - Optionally add an `api` service to `docker-compose.yml` (build from `/api`, `depends_on` the `db` service with `service_healthy`) as an alternative full-Docker path; document both paths.
+  - Confirm `frontend/.env.local` sets `NEXT_PUBLIC_API_BASE_URL` pointing at the API port (4000).
+  - Update the README.md local dev sequence to match.
+  - Replace the dashboard/product/expense error states so they distinguish "API unreachable" from "no data yet", and add a Retry button on failed cards/sections wired to RTK Query `refetch`.
+  - _Requirements: 24.1, 24.2, 24.6, 1.7, 2.5, 2.6, 3.4, 7.2, 7.4, 15.2_
+
+- [x] 20. Products: Add Product creation flow
+  - Add an "Add Product" button at the top-right of the Products page, gated to Admin via `RoleGate`.
+  - Provide a modal or side-panel form with fields: name, SKU, category, quantity (`stockQuantity`), unit price, low-stock threshold (`reorderThreshold`), rating, and category.
+  - Wire to the existing `POST /products` via the RTK Query `createProduct` mutation (endpoint already exists); on success invalidate/refresh the list, close the form, and show a success toast/confirmation.
+  - Add client-side validation: required fields and non-negative numbers, reusing `validateProduct`.
+  - _Requirements: 4.1, 4.2, 4.6, 4.9, 12.7, 16.1, 16.2_
+
+- [x] 21. Expenses: Add Expense creation flow and confirm chart data shape
+  - Add an "Add Expense" button at the top-right near the filters row, gated to Admin.
+  - Provide a form with fields: category, amount, date, note(s); wire to `POST /expenses` via the `createExpense` mutation.
+  - Verify `ExpenseChart` consumes the API's `Record<string, number>` (category -> total) shape from `GET /expenses/by-category`; the error state should surface only on real API failure.
+  - Add a proper empty-state illustration for "no expenses yet" instead of a bare error.
+  - _Requirements: 7.6, 7.7, 7.9, 12.7, 16.1, 16.2_
+
+- [x] 22. Global Help button and drawer
+  - Add a distinct Help button (icon) in the header, separate from the logged-out profile placeholder, present on every page.
+  - Clicking opens an accessible help drawer/modal with a "Getting started" section (how to add a product, how to log an expense) and any keyboard shortcuts.
+  - _Requirements: 10.3, 10.7_
+
+- [x] 23. Light/dark theme correctness
+  - Define real light-mode tokens (background, surface, text-primary, text-secondary, border, accent) via a `[data-theme='light']` override in `globals.css`, separate from the fixed dark `@theme` tokens; do not merely invert one variable.
+  - Audit every page (Dashboard, Products, Expenses, Users, Settings, auth) for elements hardcoded to dark-only colors (e.g. `bg-surface`, `text-white`, `bg-background`, `text-offwhite`) and fix contrast so light mode is readable.
+  - Keep the purple accent (`#c3b1ff`) consistent across both themes.
+  - _Requirements: 9.1, 9.2, 9.3_
+
+- [x] 24. Integrate image assets
+  - Rename `frontend/src/Aassets` to `frontend/src/Assets` (fixing the folder-name typo) and update all imports. All 10 assets already exist (architecture.png, boxnode.png, cloudshield.png, cloudstack.png, datahelix.png, metrics.png, syncflow.png, taglogo.png, trendchart.png, vectoricon.png).
+  - Use `next/image` static imports sized appropriately (icons 24-32px, hero responsive, empty-state illustrations 120-180px), rendering correctly in both themes (add a subtle background/border so transparent PNGs remain visible in light mode).
+  - Placements: taglogo/cloudstack -> sidebar logo; architecture -> dashboard hero/empty state; boxnode -> products empty state; datahelix -> expenses empty state; metrics -> dashboard stat-card icons; trendchart -> trends card accent; syncflow -> loading/refresh indicator; cloudshield -> settings/security icon; vectoricon -> header accent near the help button.
+  - _Requirements: 10.1, 25.1_
+
+- [x] 25. Verification of Batch 2
+  - Confirm local startup shows a populated dashboard, product list, and expense chart with no default red error text; adding a product and an expense works; the light/dark toggle is readable on every page; and the help button opens the drawer.
+  - Confirm `npm run build` in `frontend` completes with no type errors and existing test suites still pass.
+  - _Requirements: 20.1, 20.5, 24.6_
+
 ## Notes
 
 - Tasks marked with `*` are optional (tests) and can be skipped for a faster MVP; for this portfolio deliverable they are strongly recommended.
 - The application is fully runnable and testable locally (Tasks 1-15) before any AWS work begins (Tasks 16-17).
-- AWS tasks (16.1-16.9) follow the exact DEPLOYMENT.md order: billing alarm → IAM → VPC → RDS → EC2 → API Gateway → S3 → Amplify → Cognito/CI-CD/free-tier checklist/teardown.
+- AWS tasks (16.1-16.9) follow the exact DEPLOYMENT.md order: billing alarm â†’ IAM â†’ VPC â†’ RDS â†’ EC2 â†’ API Gateway â†’ S3 â†’ Amplify â†’ Cognito/CI-CD/free-tier checklist/teardown.
 - Each of the 33 correctness properties is a single fast-check property test (100+ iterations, tagged `// Feature: inventory-management-dashboard, Property {n}: {text}`) placed next to the code it validates.
 - Every feature includes co-located backend and/or frontend tests rather than deferring testing to the end.
 - Each task references specific requirements for traceability; checkpoints ensure incremental validation.

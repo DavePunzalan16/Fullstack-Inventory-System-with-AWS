@@ -74,6 +74,16 @@ flowchart LR
 
 ## Local Setup
 
+### Quick start (one command)
+
+From the repo root, launch the database, API, and frontend together:
+
+    powershell -ExecutionPolicy Bypass -File .\start-local.ps1
+
+Then open http://localhost:3000, go to /sign-in, and use the dev login buttons
+(Admin/Staff) to sign in without AWS Cognito. Logs are written to .local-logs\.
+
+### Manual start (two terminals)
 Prerequisites: Node.js 22 (see .nvmrc), npm, Docker (for local PostgreSQL).
 
 Step 1 - Start PostgreSQL:

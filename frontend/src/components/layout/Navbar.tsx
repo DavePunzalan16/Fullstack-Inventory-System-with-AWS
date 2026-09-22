@@ -1,11 +1,13 @@
-'use client';
+﻿'use client';
 
 /**
- * Navbar (Req 10.3, 10.7): global search + profile; drawer toggle < 768px.
- * Falls back to a placeholder profile indicator when the user is unavailable
- * (Req 10.7) while preserving access to the search bar.
+ * Navbar (Req 10.3, 10.7): global search + Help button + profile; drawer toggle
+ * < 768px. The Help button (distinct from the profile placeholder) is global.
+ * When no user is present, the profile shows initials/placeholder while keeping
+ * search and help accessible.
  */
 
+import { HelpButton } from '@/components/layout/HelpButton';
 import { GlobalSearchBar } from '@/components/search/GlobalSearchBar';
 import { useAppDispatch, useAppSelector } from '@/state/hooks';
 import { toggleSidebar } from '@/state/layoutSlice';
@@ -29,18 +31,21 @@ export function Navbar() {
         <GlobalSearchBar />
       </div>
 
-      <div className="flex items-center gap-2" data-testid="navbar-profile">
-        {user ? (
-          <span className="text-white">{user.name}</span>
-        ) : (
-          <span
-            aria-label="Profile unavailable"
-            data-testid="profile-placeholder"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-icon-bg text-offwhite"
-          >
-            ?
-          </span>
-        )}
+      <div className="flex items-center gap-3">
+        <HelpButton />
+        <div className="flex items-center gap-2" data-testid="navbar-profile">
+          {user ? (
+            <span className="text-white">{user.name}</span>
+          ) : (
+            <span
+              aria-label="Profile unavailable"
+              data-testid="profile-placeholder"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-icon-bg text-secondary"
+            >
+              ?
+            </span>
+          )}
+        </div>
       </div>
     </header>
   );

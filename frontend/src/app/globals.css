@@ -1,14 +1,27 @@
-@import 'tailwindcss';
+﻿@import 'tailwindcss';
 
 /*
  * Design tokens (Tailwind CSS 4 @theme) from the portfolio design system.
- * Colors, fonts, and radii are exposed as CSS variables + Tailwind utilities.
+ *
+ * Dark is the default. Light mode is a real, separate token set applied via a
+ * [data-theme='light'] override on <html> (set by the theme provider), not a
+ * single-variable invert. Semantic tokens (surface, background, text-primary,
+ * text-secondary, border) are what components should use so both themes stay
+ * readable; the raw brand colors remain for the accent.
  */
 @theme {
+  /* Brand accent - identical in both themes (Req 9.3 keep purple consistent). */
   --color-primary: #c3b1ff;
+
+  /* Dark theme (default) semantic tokens. */
   --color-background: #1e0031;
   --color-surface: #1a1a1a;
   --color-icon-bg: #222222;
+  --color-border: #484848;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #c7c7c7;
+
+  /* Legacy aliases kept so existing utility classes still resolve. */
   --color-white: #ffffff;
   --color-offwhite: #c7c7c7;
   --color-black: #0a0a0a;
@@ -18,8 +31,29 @@
   --font-body: 'Manrope', sans-serif;
 }
 
+/*
+ * Light theme overrides. Redefine the same CSS variables the @theme utilities
+ * compile to, so bg-surface / bg-background / text-white / text-offwhite / etc.
+ * automatically pick up readable light values. The accent stays purple.
+ */
+[data-theme='light'] {
+  --color-background: #f5f3fa;
+  --color-surface: #ffffff;
+  --color-icon-bg: #efe9fb;
+  --color-border: #d9d2e9;
+  --color-text-primary: #1e0031;
+  --color-text-secondary: #4a4458;
+
+  /* Remap legacy aliases so dark-only class names become readable in light. */
+  --color-white: #1e0031;      /* text-white -> dark ink on light surfaces */
+  --color-offwhite: #4a4458;   /* text-offwhite -> muted dark */
+  --color-black: #0a0a0a;
+  --color-dark-gray: #d9d2e9;  /* borders */
+}
+
 body {
   background-color: var(--color-background);
-  color: var(--color-white);
+  color: var(--color-text-primary);
   font-family: var(--font-body);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }

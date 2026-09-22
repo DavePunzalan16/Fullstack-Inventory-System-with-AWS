@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 /**
- * ProductGrid (Req 3.1–3.6): MUI DataGrid with server-side pagination, sorting,
+ * ProductGrid (Req 3.1â€“3.6): MUI DataGrid with server-side pagination, sorting,
  * and filtering, a low-stock badge on low-stock rows, and an empty-state on
  * zero matches. Data flows via RTK Query.
  */
@@ -15,8 +15,9 @@ import {
 } from '@mui/x-data-grid';
 import { useMemo, useState } from 'react';
 
+import boxnode from '@/Assets/boxnode.png';
 import { LowStockBadge } from './LowStockBadge';
-import { EmptyState } from '@/components/common/States';
+import { EmptyState, ErrorState, isConnectionError } from '@/components/common/States';
 import { useGetProductsQuery } from '@/state/api';
 import type { Product } from '@/types';
 
@@ -66,11 +67,21 @@ export function ProductGrid() {
     };
   }, [pagination, sort, filter]);
 
-  const { data, isLoading } = useGetProductsQuery(query);
+  const { data, isLoading, isError, error, refetch } = useGetProductsQuery(query);
   const rows = data?.data ?? [];
 
+  if (isError) {
+    return <ErrorState error={error} onRetry={refetch} message={isConnectionError(error) ? undefined : 'Could not load products.'} />;
+  }
+
   if (!isLoading && rows.length === 0) {
-    return <EmptyState message="No products match the current filters." />;
+    return (
+      <EmptyState
+        illustration={boxnode}
+        illustrationAlt=""
+        message="No products match the current filters. Use the Add Product button to create one."
+      />
+    );
   }
 
   return (

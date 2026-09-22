@@ -1,11 +1,14 @@
-'use client';
+﻿'use client';
 
 /**
  * Settings page (Req 9.1, 9.2, 9.6): theme toggle with exactly two options
  * (dark/light) applied app-wide without reload. Surfaces a message if the
- * preference could not be persisted.
+ * preference could not be persisted. A cloudshield icon accents the section.
  */
 
+import Image from 'next/image';
+
+import cloudshield from '@/Assets/cloudshield.png';
 import { useAppDispatch, useAppSelector } from '@/state/hooks';
 import { setTheme } from '@/state/themeSlice';
 
@@ -18,8 +21,11 @@ export default function SettingsPage() {
     <div className="flex flex-col gap-6">
       <h1 className="font-display text-4xl text-white">Settings</h1>
 
-      <section aria-label="Theme" className="rounded-md bg-surface p-4">
-        <h2 className="mb-3 text-white">Theme</h2>
+      <section aria-label="Theme" className="rounded-md bg-surface p-4 ring-1 ring-border/40">
+        <h2 className="mb-3 flex items-center gap-2 text-white">
+          <Image src={cloudshield} alt="" width={24} height={24} aria-hidden />
+          Theme &amp; appearance
+        </h2>
         <div role="radiogroup" aria-label="Theme mode" className="flex gap-3">
           {(['dark', 'light'] as const).map((option) => (
             <button
@@ -30,7 +36,7 @@ export default function SettingsPage() {
               onClick={() => dispatch(setTheme(option))}
               className={[
                 'rounded-full px-6 py-2 font-bold uppercase',
-                mode === option ? 'bg-primary text-black' : 'bg-icon-bg text-offwhite',
+                mode === option ? 'bg-primary text-black' : 'bg-icon-bg text-secondary',
               ].join(' ')}
             >
               {option}

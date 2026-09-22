@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 /**
- * Sign-in page (Req 11.5–11.7): authenticates with Cognito, stores the JWT on
+ * Sign-in page (Req 11.5â€“11.7): authenticates with Cognito, stores the JWT on
  * success, shows an error and stores nothing on failure.
  */
 
@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import { DevLoginPanel } from '@/components/auth/DevLoginPanel';
 import { signIn } from '@/lib/cognito';
 import { useAppDispatch } from '@/state/hooks';
 import { authFailure, authStart, authSuccess } from '@/state/authSlice';
@@ -58,6 +59,7 @@ export default function SignInPage() {
           Sign in
         </button>
       </form>
+      <DevLoginPanel />
       <p className="text-sm text-offwhite">
         No account? <Link href="/sign-up" className="text-primary">Sign up</Link>
       </p>

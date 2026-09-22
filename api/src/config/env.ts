@@ -1,10 +1,10 @@
-/**
+﻿/**
  * Environment configuration loader and validator (fail-fast).
  *
  * Loads variables from a `.env` file via dotenv, then validates that every
  * required variable is present and non-empty. If any required variable is
  * absent or empty, {@link loadConfig} throws an {@link EnvValidationError}
- * that names the offending variable(s) — the bootstrap in `index.ts` uses this
+ * that names the offending variable(s) â€” the bootstrap in `index.ts` uses this
  * to abort startup before any request handling is initialized.
  *
  * Satisfies:
@@ -46,6 +46,8 @@ export interface AppConfig {
     readonly accessKeyId: string;
     readonly secretAccessKey: string;
   };
+  /** Auth mode: 'dev' enables a local admin login without Cognito; 'cognito' (default) uses real JWT verification. */
+  readonly authMode: 'dev' | 'cognito';
 }
 
 /**
@@ -122,5 +124,6 @@ export function loadConfig(
       accessKeyId: readVar(source, 'AWS_ACCESS_KEY_ID'),
       secretAccessKey: readVar(source, 'AWS_SECRET_ACCESS_KEY'),
     },
+    authMode: (source.AUTH_MODE ?? '').trim().toLowerCase() === 'dev' ? 'dev' : 'cognito',
   };
 }

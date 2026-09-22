@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * Sidebar (Req 10.1, 10.2, 10.4, 10.5, 6.5).
@@ -8,11 +8,13 @@
  * layout slice.
  */
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import { useAppDispatch, useAppSelector } from '@/state/hooks';
 import { setSidebarOpen } from '@/state/layoutSlice';
+import cloudstack from '@/Assets/cloudstack.png';
 import { visibleLinks } from './navLinks';
 
 export function Sidebar() {
@@ -33,7 +35,10 @@ export function Sidebar() {
         isOpen ? 'max-md:translate-x-0' : 'max-md:-translate-x-full',
       ].join(' ')}
     >
-      <span className="font-display text-3xl text-offwhite mb-4">Inventory</span>
+      <div className="mb-4 flex items-center gap-2">
+        <Image src={cloudstack} alt="" width={32} height={32} className="rounded" aria-hidden />
+        <span className="font-display text-3xl text-white">Inventory</span>
+      </div>
       {links.map((link) => {
         const isActive =
           link.href === '/' ? pathname === '/' : pathname.startsWith(link.href);
