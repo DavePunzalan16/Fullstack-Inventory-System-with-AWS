@@ -1,14 +1,15 @@
 'use client';
 
 /**
- * Navbar (Req 10.3, 10.7): global search + Help button + auth controls.
- * When logged in, shows the user email + Logout; otherwise a Login link.
- * The Help button (distinct from auth controls) is global.
+ * Navbar (Req 10.3, 10.7, Batch 4): search + guest banner + Help + auth controls.
+ * Logged in -> user email + Logout; guest/anon -> Login link. The guest banner
+ * appears when browsing in read-only guest mode.
  */
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+import { GuestBanner } from '@/components/layout/GuestBanner';
 import { HelpButton } from '@/components/layout/HelpButton';
 import { GlobalSearchBar } from '@/components/search/GlobalSearchBar';
 import { signOut } from '@/state/authSlice';
@@ -22,7 +23,7 @@ export function Navbar() {
 
   const handleLogout = () => {
     dispatch(signOut());
-    router.replace('/sign-in');
+    router.replace('/');
   };
 
   return (
@@ -41,6 +42,7 @@ export function Navbar() {
       </div>
 
       <div className="flex items-center gap-3">
+        <GuestBanner />
         <HelpButton />
         {user ? (
           <div className="flex items-center gap-2" data-testid="navbar-profile">

@@ -1,5 +1,5 @@
 /**
- * Cognito JWT authentication and role resolution (Req 11.8–11.10, 12.1, 12.2).
+ * Cognito JWT authentication and role resolution (Req 11.8â€“11.10, 12.1, 12.2).
  *
  * Verifies the bearer token using a Cognito JWT verifier (JWKS-backed), then
  * resolves the caller's role. Role resolution precedence (Property 16 / Req
@@ -92,6 +92,11 @@ export function extractBearerToken(header: string | undefined): string | undefin
 export interface AuthOptions {
   readonly verifyToken: TokenVerifier;
   readonly lookupRole: RoleLookup;
+  /**
+   * When true, requests WITHOUT a token are allowed through with no eq.user`n   * (guest browsing); a present-but-invalid token is still rejected 401.
+   * When false/omitted, a missing token is rejected 401 (default, strict).
+   */
+  readonly optional?: boolean;
 }
 
 /**
@@ -103,7 +108,7 @@ export interface AuthOptions {
  * role and calls `next()`.
  */
 export function createAuthMiddleware(options: AuthOptions): RequestHandler {
-  const { verifyToken, lookupRole } = options;
+  const { verifyToken, lookupRole, optional = false } = options;
 
   return async function authenticate(
     req: Request,
@@ -112,6 +117,12 @@ export function createAuthMiddleware(options: AuthOptions): RequestHandler {
   ): Promise<void> {
     const token = extractBearerToken(req.headers.authorization);
     if (token === undefined) {
+      // Optional mode: no token means an anonymous guest - allow through with
+      // no req.user so role-gated (write) routes still return 403.
+      if (optional) {
+        next();
+        return;
+      }
       next(new UnauthorizedError('Missing or malformed authorization token'));
       return;
     }

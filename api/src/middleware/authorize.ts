@@ -1,5 +1,5 @@
 /**
- * Role-based access control guard (Req 4.4, 12.3–12.6, Property 15).
+ * Role-based access control guard (Req 4.4, 12.3â€“12.6, Property 15).
  *
  * The decision is exposed as the pure function {@link isAuthorized} so it can
  * be property-tested exhaustively. `requireRole(...)` wraps it as Express
@@ -17,7 +17,7 @@ import type { Role } from '../types';
  * `allowedRoles`.
  *
  * - A missing, empty, or unrecognized role is never authorized (Req 12.3).
- * - Otherwise, the role must be among `allowedRoles` (Req 12.4–12.6).
+ * - Otherwise, the role must be among `allowedRoles` (Req 12.4â€“12.6).
  *
  * @param role - The resolved role (or undefined when absent/unrecognized).
  * @param allowedRoles - Roles permitted on the endpoint.
@@ -55,6 +55,18 @@ export function requireRole(...allowedRoles: Role[]): RequestHandler {
       );
       return;
     }
+    next();
+  };
+}
+
+/**
+ * A permissive guard for read-only endpoints that are browsable by guests
+ * (Batch 4). It performs no role check; write endpoints must still use
+ * `requireRole('admin')`, which returns 403 for guests (no role). Reads carry
+ * no risk of mutation, so allowing anonymous browsing is acceptable here.
+ */
+export function permitAll(): RequestHandler {
+  return function allow(_req: Request, _res: Response, next: NextFunction): void {
     next();
   };
 }

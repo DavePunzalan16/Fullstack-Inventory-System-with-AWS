@@ -467,6 +467,40 @@ Context for this batch (do not contradict):
   - Fresh start runs on port 3000 every time (or errors clearly). `/sign-in` loads a real form (no 500). Log in as `admin@gmail.com`/`admin123`, edit email/password in Settings, log out, log back in with new credentials to confirm persistence. Sign up a basic user -> new row in User table -> that user sees Theme-only Settings. `npm run build` and `npm test` still pass.
   - _Requirements: 11.5, 11.6, 11.7, 12.7, 20.1, 20.5, 24.6_
 
+## Landing, Guest Mode & Auth Polish (Batch 4)
+
+Context for this batch (do not contradict):
+
+- Frontend assets live in `frontend/src/Assets` (already renamed from `Aassets`). A new `landing-bg.png` will be added there.
+- Auth is the existing API/JWT system (`AUTH_MODE=dev` locally; Cognito for prod). Admin seed `admin@gmail.com`/`admin123`. Basic signups get role `staff`. Write endpoints are gated by `requireRole('admin')`.
+- The app root `/` currently renders the dashboard under a `(dashboard)` route group. The landing page must become the new `/` for everyone (logged in or not), and the dashboard moves to its own path (e.g. `/dashboard`).
+
+- [x] 31. Regression gate (verify Batch 1-3 before new work)
+  - Before implementing 32-36, verify on a fresh `start-local.ps1` boot: dev server always on port 3000 (no 3001 fallback); Dashboard/Products/Expenses load real data with no error banners on clean start; Add Product and Add Expense work end-to-end and lists refresh; `/sign-in` renders a real form (no 500); admin login (`admin@gmail.com`/`admin123`) works and Settings email/password edit persists across logout/login; sign-up creates a basic user who sees only the Theme toggle in Settings; light/dark toggle readable on every page; `npm run build` and `npm test` pass clean for both projects. Fix any regression before proceeding.
+  - _Requirements: 20.1, 20.5, 24.6, 9.1, 11.5, 11.6, 12.7_
+
+- [x] 32. Landing page at "/"
+  - Add `landing-bg.png` to `frontend/src/Assets`. Build a standalone landing page at `/` (no sidebar/nav) shown to everyone regardless of session; move the dashboard to `/dashboard` and update the sidebar links + any redirects/tests accordingly.
+  - Full-viewport `landing-bg.png` with a bottom dark gradient overlay for readability; hero headline "DMP INVENTORY SYSTEM"; one-line professional subheadline; small logo (taglogo/cloudstack) top-left; three CTA buttons (purple accent): Login -> `/sign-in`, Register -> `/sign-up`, Continue as Guest -> enter the app in guest mode. Clear visual hierarchy (logo -> headline -> subheadline -> buttons).
+  - _Requirements: 10.1, 10.6, 25.1_
+
+- [x] 33. Guest mode (read-only)
+  - "Continue as Guest" enters the app able to browse Dashboard/Products/Expenses but cannot write: hide/disable Add Product, Add Expense, and Settings profile editing; show a persistent header banner/badge "Guest mode - log in to make changes" linking to `/sign-in`.
+  - Enforce read-only on the API too: write endpoints (create/update/delete product, create/delete expense, `PATCH /users/me`) must reject guest sessions server-side (a guest has no authenticated write role), not merely hidden in the UI.
+  - _Requirements: 12.3, 12.6, 12.7, 12.8, 4.4, 7.9_
+
+- [x] 34. Polished sign-in and sign-up pages
+  - Inline validation (invalid email, empty password) shown before submit; show/hide password toggle; distinct error banner for wrong credentials ("Incorrect email or password") vs network/server error; submit button loading state that prevents double-submit; cross-links (sign-in <-> register). After login redirect to the dashboard; after registration either auto-login or redirect to sign-in with an "Account created, please log in" message. Use `landing-bg.png` (or a cropped/blurred variant) as the auth pages background for visual consistency.
+  - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.5, 11.6, 11.7_
+
+- [x] 35. Hidden author credit on Settings
+  - At the very bottom of the Settings page, a small, subtle, muted-gray underlined text link "Site by Dave Matthew Punzalan" linking to https://dm-punzalan-portfolio2026.vercel.app/ with `target="_blank"` `rel="noopener noreferrer"`. Low visual weight - visible but unobtrusive.
+  - _Requirements: 25.1_
+
+- [x] 36. Final verification of Batch 4
+  - Visiting `/` with no session shows the landing page, not the dashboard. All three CTAs work. Guest mode blocks writes server-side (verify by calling an add-product/add-expense endpoint directly in a guest session -> rejected). Admin and basic-user flows still work. `npm run build` and `npm test` pass with zero errors. Re-run the full Task 31 checklist end to end on a fresh `start-local.ps1` boot.
+  - _Requirements: 20.1, 20.5, 24.6, 11.5, 11.6, 12.7_
+
 ## Notes
 
 - Tasks marked with `*` are optional (tests) and can be skipped for a faster MVP; for this portfolio deliverable they are strongly recommended.

@@ -1,7 +1,7 @@
 /**
  * Product routes (Req 4.x, 3.x, 5.x, 8.5).
  *
- * Route definitions only — no business logic. Reads allow Admin or Staff;
+ * Route definitions only â€” no business logic. Reads allow Admin or Staff;
  * writes require Admin. Validation runs before controllers. The search route
  * is declared before `/products/:id` so `search` is not captured as an id.
  */
@@ -10,7 +10,7 @@ import { Router } from 'express';
 import multer from 'multer';
 
 import * as controller from '../controllers/product.controller';
-import { requireRole } from '../middleware/authorize';
+import { permitAll, requireRole } from '../middleware/authorize';
 import { validate } from '../middleware/validate';
 import {
   createProductSchema,
@@ -27,11 +27,11 @@ const upload = multer({ storage: multer.memoryStorage() });
 export function productRouter(): Router {
   const router = Router();
 
-  router.get('/products/search', requireRole('admin', 'staff'), validate({ query: searchQuerySchema }), controller.search);
+  router.get('/products/search', permitAll(), validate({ query: searchQuerySchema }), controller.search);
 
-  router.get('/products', requireRole('admin', 'staff'), validate({ query: listProductsQuerySchema }), controller.list);
+  router.get('/products', permitAll(), validate({ query: listProductsQuerySchema }), controller.list);
 
-  router.get('/products/:id', requireRole('admin', 'staff'), validate({ params: productIdParamSchema }), controller.getById);
+  router.get('/products/:id', permitAll(), validate({ params: productIdParamSchema }), controller.getById);
 
   router.post('/products', requireRole('admin'), validate({ body: createProductSchema }), controller.create);
 

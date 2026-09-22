@@ -11,7 +11,7 @@ export interface NavLink {
 
 /** The five ordered sidebar links. */
 export const NAV_LINKS: readonly NavLink[] = [
-  { label: 'Dashboard', href: '/' },
+  { label: 'Dashboard', href: '/dashboard' },
   { label: 'Products', href: '/products' },
   { label: 'Users', href: '/users', adminOnly: true },
   { label: 'Expenses', href: '/expenses' },

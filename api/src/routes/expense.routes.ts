@@ -1,11 +1,11 @@
 /**
- * Expense routes (Req 7.x). Reads allow Admin/Staff; writes require Admin.
+ * Expense routes (Req 7.x). Reads are guest-browsable (Batch 4); writes require Admin.
  */
 
 import { Router } from 'express';
 
 import * as controller from '../controllers/expense.controller';
-import { requireRole } from '../middleware/authorize';
+import { permitAll, requireRole } from '../middleware/authorize';
 import { validate } from '../middleware/validate';
 import {
   createExpenseSchema,
@@ -17,9 +17,9 @@ import {
 export function expenseRouter(): Router {
   const router = Router();
 
-  router.get('/expenses/by-category', requireRole('admin', 'staff'), controller.byCategory);
+  router.get('/expenses/by-category', permitAll(), controller.byCategory);
 
-  router.get('/expenses', requireRole('admin', 'staff'), validate({ query: listExpensesQuerySchema }), controller.list);
+  router.get('/expenses', permitAll(), validate({ query: listExpensesQuerySchema }), controller.list);
 
   router.post('/expenses', requireRole('admin'), validate({ body: createExpenseSchema }), controller.create);
 

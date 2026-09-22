@@ -1,5 +1,6 @@
 /**
- * Auth slice (Req 11.6, 11.7): session user, token, and status.
+ * Auth slice (Req 11.6, 11.7, and Batch 4 guest mode): session user, token,
+ * status, and a read-only guest flag.
  */
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
@@ -14,6 +15,8 @@ interface AuthState {
   token: string | null;
   status: AuthStatus;
   error: string | null;
+  /** True when browsing as an unauthenticated, read-only guest (Batch 4). */
+  isGuest: boolean;
 }
 
 const initialState: AuthState = {
@@ -21,6 +24,7 @@ const initialState: AuthState = {
   token: null,
   status: 'idle',
   error: null,
+  isGuest: false,
 };
 
 const authSlice = createSlice({
@@ -31,12 +35,13 @@ const authSlice = createSlice({
       state.status = 'authenticating';
       state.error = null;
     },
-    /** Stores the JWT + user on successful sign-in (Req 11.6). */
+    /** Stores the JWT + user on successful sign-in (Req 11.6). Clears guest mode. */
     authSuccess(state, action: PayloadAction<{ token: string; user: SessionUser | null }>) {
       state.token = action.payload.token;
       state.user = action.payload.user;
       state.status = 'authenticated';
       state.error = null;
+      state.isGuest = false;
       setToken(action.payload.token);
     },
     /** Records a sign-in failure and stores no token (Req 11.7). */
@@ -49,15 +54,25 @@ const authSlice = createSlice({
     setUser(state, action: PayloadAction<SessionUser | null>) {
       state.user = action.payload;
     },
+    /** Enters read-only guest mode: no token, no user, browsing only (Batch 4). */
+    enterGuestMode(state) {
+      state.user = null;
+      state.token = null;
+      state.status = 'idle';
+      state.error = null;
+      state.isGuest = true;
+      clearToken();
+    },
     signOut(state) {
       state.user = null;
       state.token = null;
       state.status = 'idle';
       state.error = null;
+      state.isGuest = false;
       clearToken();
     },
   },
 });
 
-export const { authStart, authSuccess, authFailure, setUser, signOut } = authSlice.actions;
+export const { authStart, authSuccess, authFailure, setUser, enterGuestMode, signOut } = authSlice.actions;
 export default authSlice.reducer;

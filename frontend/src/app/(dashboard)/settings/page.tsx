@@ -108,23 +108,39 @@ function EditProfileSection() {
 
 export default function SettingsPage() {
   const user = useAppSelector((s) => s.auth.user);
+  const isGuest = useAppSelector((s) => s.auth.isGuest);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex min-h-[70vh] flex-col gap-6">
       <h1 className="font-display text-4xl text-white">Settings</h1>
 
-      {!user ? (
-        <section className="rounded-md bg-surface p-6 ring-1 ring-border/40">
-          <p className="text-secondary">
-            Please <Link href="/sign-in" className="text-primary">sign in</Link> to manage your settings.
+      {/* Theme is available to everyone, including guests. */}
+      <ThemeSection />
+
+      {/* Profile editing is admin-only. */}
+      {user?.role === 'admin' && <EditProfileSection />}
+
+      {/* Guests / logged-out users get a gentle prompt (no error). */}
+      {!user && (
+        <section className="rounded-md bg-surface p-4 ring-1 ring-border/40">
+          <p className="text-sm text-secondary">
+            {isGuest ? 'You are browsing as a guest. ' : ''}
+            <Link href="/sign-in" className="text-primary">Log in</Link> to edit your profile.
           </p>
         </section>
-      ) : (
-        <>
-          <ThemeSection />
-          {user.role === 'admin' && <EditProfileSection />}
-        </>
       )}
+
+      {/* Hidden author credit (subtle, bottom of page). */}
+      <footer className="mt-auto pt-8">
+        <a
+          href="https://dm-punzalan-portfolio2026.vercel.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-secondary/60 underline underline-offset-2 hover:text-secondary"
+        >
+          Site by Dave Matthew Punzalan
+        </a>
+      </footer>
     </div>
   );
 }

@@ -3,9 +3,9 @@
  *
  * {@link createApp} builds the Express app with the full middleware chain in
  * the order required by the design:
- *   security (helmet + nosniff + CORS + body limit) Ã¢â€ â€™ request logging Ã¢â€ â€™
- *   rate limiting Ã¢â€ â€™ routing (public /health, then authenticated feature
- *   routes) Ã¢â€ â€™ centralized error handler.
+ *   security (helmet + nosniff + CORS + body limit) ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ request logging ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢
+ *   rate limiting ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ routing (public /health, then authenticated feature
+ *   routes) ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ centralized error handler.
  *
  * Authentication and per-route authorization are applied inside the feature
  * routers (they receive the shared auth middleware). Keeping assembly here
@@ -81,7 +81,10 @@ export function createApp(config: AppConfig, deps: CreateAppDeps = {}): Express 
       ? createDevVerifier()
       : createCognitoVerifier(cognitoConfigFromEnv()));
   const lookupRole = deps.lookupRole ?? prismaRoleLookup();
-  const authenticate = createAuthMiddleware({ verifyToken, lookupRole });
+  // Optional auth: attach req.user when a valid token is present, but let
+  // anonymous guests through so they can browse read-only endpoints. Write
+  // routes still call requireRole('admin'), returning 403 for guests.
+  const authenticate = createAuthMiddleware({ verifyToken, lookupRole, optional: true });
 
   // 4. Routes: public /health + public email/password auth, then authenticated routes.
   // Email/password login/signup are public (mounted before authentication).
