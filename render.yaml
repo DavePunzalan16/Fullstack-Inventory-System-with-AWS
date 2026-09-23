@@ -1,15 +1,11 @@
-# Render Blueprint for the Inventory Management Dashboard API.
-# Render auto-detects this file when you connect the repo.
-
 services:
   - type: web
     name: inventory-api
     runtime: node
-    region: ohio          # matches Neon "AWS US East 2 (Ohio)" for lowest latency
+    region: ohio
     plan: free
-    rootDir: api
-    buildCommand: npm ci && npx prisma generate && npx prisma migrate deploy && npm run build
-    startCommand: node dist/index.js
+    buildCommand: cd api && npm ci && npx prisma generate && npx prisma migrate deploy && npm run build
+    startCommand: node api/dist/index.js
     autoDeploy: true
     envVars:
       - key: DATABASE_URL
@@ -19,17 +15,17 @@ services:
       - key: ALLOWED_ORIGINS
         sync: false
       - key: AWS_REGION
-        sync: false
+        value: "us-east-1"
       - key: AWS_ACCESS_KEY_ID
         sync: false
       - key: AWS_SECRET_ACCESS_KEY
         sync: false
       - key: S3_BUCKET
-        sync: false
+        value: "placeholder"
       - key: COGNITO_USER_POOL_ID
-        sync: false
+        value: "placeholder"
       - key: COGNITO_CLIENT_ID
-        sync: false
+        value: "placeholder"
       - key: AUTH_MODE
         value: "dev"
       - key: NODE_ENV
